@@ -5,50 +5,54 @@
 
 
 
-Martist::Martist(unsigned char* buffer, size_t height, size_t width, int rdepth, int gdepth,int bdepth){
-	changeBuffer(buffer,width,height);
-	height = height;
-	width = width;
-	rdepth = rdepth;
-	gdepth = gdepth;
-	bdepth = bdepth;
-}
-
-std::string Martist::getExpression(int depth,std::string exp){
-	expr1_depth =  std::rand() %(depth-1) + 1; //depth between [1,depth-1]
-	expr2_depth = 1 - expr1_depth;
-	if(exp == 'sin' || exp == "cos") {
-
-	}
-
-	if(exp == "avg" || exp =="(" {
-	})
-
-
-	std::string expr1 = randExpression(expr1_depth);
-
-	//sin & cos have expr1 
-	//avg and product have expr1 and expr2
-
-
-}
-
-std::string Martist::randExpression(int depth){
+Martist::Martist(unsigned char* buffer, size_t height, size_t width, int rdepth, int gdepth,int bdepth)
+				: height(height),width(width),rdepth(rdepth),gdepth(gdepth),bdepth(bdepth){
 	
-	std::string exp
+	changeBuffer(buffer,width,height);
+	red = getExpression(rdepth);
+	green = getExpression(gdepth);
+	blue = getExpression(bdepth);
+}
+
+std::string Martist::getExpression(int depth){
+
 	std::string expressions[4] = {"sin","cos","avg","("};
+	std::string exp;
 
 	if(depth > 1) {
 		int choice = std::rand()%4;
 		exp = expressions[choice];
-
+		expr1_depth =  std::rand() %(depth-1) + 1; //depth between [1,depth-1]
+		expr2_depth = 1 - expr1_depth;
 	}
 	//depth == 1
 	else
 		exp = (std::rand()%2 == 0) ? "x" : "y";
 
+	//sin & cos have expr1 
+	if(exp == 'sin' || exp == "cos") {
+		exp.append("(pi*");
+		exp.append(getExpression(expr1_depth));
+		exp.append(")");
+	}
+	//avg and product have expr1 and expr2
+	else if(exp == "avg") {
+		exp.append("(");
+		exp.append(getExpression(expr1_depth));
+		exp.append(",");
+		exp.append(getExpression(expr2_depth));
+		exp.append(")");
+	}
+	else if(exp =="(" ){
+		exp.append(getExpression(expr1_depth));
+		exp.append("*");
+		exp.append(getExpression(expr2_depth));
+		exp.append(")");
+	}
+
 	return exp;
 }
+
 
 void Martist::redDepth(int depth){
 	rdepth = depth;

@@ -24,10 +24,12 @@ private:
 	unsigned char* buffer;
 	size_t height;
 	size_t width;
-	int rdepth;
-	int gdepth;
-	int bdepth;
+	int rdepth,gdepth,bdepth;
 	int seed;
+	std::string red,green,blue;
+
+
+	std::string getExpression(int depth);
 
 }
 
