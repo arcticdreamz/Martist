@@ -3,14 +3,16 @@
 #include <string>
 #include <cstdlib>     // std::rand
 #include <math.h>
-
+#include <iostream>
+#include <vector>
 
 Martist::Martist(double* buffer, size_t height, size_t width, int rdepth, int gdepth,int bdepth)
-				: height(height),width(width),rdepth(rdepth),gdepth(gdepth),bdepth(bdepth){
+				:height(height),width(width),rdepth(rdepth),gdepth(gdepth),bdepth(bdepth){
 	
 	changeBuffer(buffer,width,height);
 
 }
+Martist::~Martist() { delete[] myBuffer; }
 
 std::string Martist::getExpression(int depth){
 
@@ -81,7 +83,8 @@ void Martist::changeBuffer(double* buffer, size_t width, size_t height){
 		size_t bufferSize = width*height*3;
 		buffer  = new double[bufferSize];  // Creates 5 elements
 		if(buffer == NULL)
-			throw domain_error ("Buffer not initialised");
+			throw std::domain_error("Buffer not initialised");
+		myBuffer = buffer;
 }
 void Martist::paint(){
 
@@ -93,16 +96,20 @@ void Martist::paint(){
 	std::string greenParsed = "pi pi pi x * cos * sin x x * + 2 / * cos";
 	std::string blueParsed = "pi pi pi x * cos * sin x x * + 2 / * cos";
 
-	for(int y = 0; y < height; y++){
-		for(int x = 0; x < width; x++){
-			index = (x + y*width)*3;
-			buffer[index] = evaluateExpression(redParsed,x,y); 		//R
-			buffer[index+1] = evaluateExpression(greenParsed,x,y);	//G
-			buffer[index+2] = evaluateExpression(blueParsed,x,y);	//B
+	for(double y = 0; y < height; y++){
+		for(double x = 0; x < width; x++){
+			size_t index = (x + y*width)*3;
+			double redvalue = evaluateExpression(redParsed,x,y); 
+			myBuffer[index] = redvalue;		//R
+			myBuffer[index+1] = evaluateExpression(greenParsed,x,y);	//G
+			myBuffer[index+2] = evaluateExpression(blueParsed,x,y);	//B
+			std::cout << myBuffer[index] << " " << myBuffer[index+1] << " " << myBuffer[index+2];
+		}
+		std::cout << "" << std::endl;
 	}
 }
 
-double Martist::evaluateExpression(std::string exp,int xpos, int ypos){
+double Martist::evaluateExpression(std::string exp,double xpos, double ypos){
 
 	std::vector<double> numberStack;
 
@@ -116,7 +123,7 @@ double Martist::evaluateExpression(std::string exp,int xpos, int ypos){
 
 		//Operands
 		if(*c == 'x' || *c == 'y' || *c == '2' || *c == 'p' || *c == 'e'){
-			else if(*c == 'x')
+			if(*c == 'x')
 				numberStack.push_back(xpos/width);
 			else if(*c == 'y')
 				numberStack.push_back(ypos/height);
@@ -133,35 +140,51 @@ double Martist::evaluateExpression(std::string exp,int xpos, int ypos){
 			}
 		//Operators
 		}else{
-
-			double op1 = numberStack.back();
-			numberStack.pop_back();
-			double op2 = numberStack.back();
-			numberStack.pop_back();
-
-			if(*c == 's'){
-				c = c + 3
-				numberStack.push_back(sin(op1 * op2));
+			if(*c == 's'){ //sin
+				c = c + 3;
+				double op = numberStack.back();
+				numberStack.pop_back();
+				numberStack.push_back(sin(op));
 				continue;
 			}
-			else if(*c == 'c'){
-				c = c + 3
-				numberStack.push_back(cos(op1 * op2));
+			else if(*c == 'c'){//cos
+				c = c + 3;
+				double op = numberStack.back();
+				numberStack.pop_back();
+				numberStack.push_back(cos(op));
 				continue;
 			}
-			else if(*c == '*')
-				numberStack.push_back(op1 * op2);
-			else if(*c == '/')
-				numberStack.push_back(op1 / op2);
-			else if(*c == '+')
-				numberStack.push_back(op1 + op2);
+			else if(*c == '*'){
+				double op = numberStack.back();
+				numberStack.pop_back();
+				double op2 = numberStack.back();
+				numberStack.pop_back();
+
+				numberStack.push_back(op * op2);
+			}
+			else if(*c == '/'){
+				double op = numberStack.back();
+				numberStack.pop_back();
+				double op2 = numberStack.back();
+				numberStack.pop_back();
+
+				numberStack.push_back(op / op2);
+			}				
+			else if(*c == '+'){
+				double op = numberStack.back();
+				numberStack.pop_back();
+				double op2 = numberStack.back();
+				numberStack.pop_back();
+
+				numberStack.push_back(op + op2);
+			}
 		}
 
 		++c;
 
 	}
-
-	return numberStack.back();
+	double result = numberStack.back();
+	return result;
 
 }
 

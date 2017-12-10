@@ -8,8 +8,8 @@
 
 class Martist {	
 public:
-	explicit Martist(unsigned char* buffer, size_t height, size_t width, int rdepth, int gdepth,int bdepth);
-	//~Martist();
+	explicit Martist(double* buffer, size_t height, size_t width, int rdepth, int gdepth,int bdepth);
+	~Martist();
 
 	void redDepth(int depth);
 	int redDepth();
@@ -18,22 +18,21 @@ public:
 	void blueDepth(int depth);
 	int blueDepth();	
 	void seed(int seed);
-	void changeBuffer(unsigned char* buffer, size_t width, size_t height);
+	void changeBuffer(double* buffer, size_t width, size_t height);
 	void paint();
 	
 private:
-	std::istream& in;
-	unsigned char* buffer;
+	double* myBuffer;
 	size_t height;
 	size_t width;
 	int rdepth,gdepth,bdepth;
-	int seed;
+	//int seed;
 	std::string red,green,blue;
 
 
 	std::string getExpression(int depth);
-	double evaluateExpression(std::string exp,size_t position);
+	double evaluateExpression(std::string exp,double xpos, double ypos);
 
-}
+};
 
 #endif

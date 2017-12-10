@@ -1,4 +1,4 @@
-//#include "martist.hpp"
+#include "martist.hpp"
 #include <stdexcept> //domain_error
 #include <string>
 #include <cstdlib>     // std::rand
@@ -6,11 +6,12 @@
 
 
 int main(){
-/*	unsigned char* buffer = nullptr;
-	Martist martist(buffer,200,200,4,4,4);
-*/
-
-	//pi pi pi x * cos * sin x x * + 2 / * cos
+	double* buffer = nullptr;
+	size_t height = 20;
+	size_t width = 20;
+	Martist martist(buffer,height,width,4,4,4);
+	martist.paint();
+	
 
 
 	return 0;
