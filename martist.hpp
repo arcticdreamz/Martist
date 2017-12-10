@@ -9,6 +9,8 @@
 class Martist {	
 public:
 	explicit Martist(unsigned char* buffer, size_t height, size_t width, int rdepth, int gdepth,int bdepth);
+	//~Martist();
+
 	void redDepth(int depth);
 	int redDepth();
 	void greenDepth(int depth);
@@ -30,6 +32,7 @@ private:
 
 
 	std::string getExpression(int depth);
+	double evaluateExpression(std::string exp,size_t position);
 
 }
 
