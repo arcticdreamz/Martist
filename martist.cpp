@@ -22,33 +22,33 @@ std::string Martist::getExpression(int depth){
 	if(depth > 1) {
 		int choice = std::rand()%4;
 		exp = expressions[choice];
-		expr1_depth =  std::rand() %(depth-1) + 1; //depth between [1,depth-1]
-		expr2_depth = 1 - expr1_depth;
+		int expr1_depth =  std::rand() %(depth-1) + 1; //depth between [1,depth-1]
+		int expr2_depth = depth - expr1_depth;
+	
+		//sin & cos have expr1 
+		if(exp == "sin" || exp == "cos") {
+			exp.append("(pi*");
+			exp.append(getExpression(expr1_depth));
+			exp.append(")");
+		}
+		//avg and product have expr1 and expr2
+		else if(exp == "avg") {
+			exp.append("(");
+			exp.append(getExpression(expr1_depth));
+			exp.append(",");
+			exp.append(getExpression(expr2_depth));
+			exp.append(")");
+		}
+		else if(exp =="(" ){
+			exp.append(getExpression(expr1_depth));
+			exp.append("*");
+			exp.append(getExpression(expr2_depth));
+			exp.append(")");
+		}
 	}
 	//depth == 1
 	else
 		exp = (std::rand()%2 == 0) ? "x" : "y";
-
-	//sin & cos have expr1 
-	if(exp == 'sin' || exp == "cos") {
-		exp.append("(pi*");
-		exp.append(getExpression(expr1_depth));
-		exp.append(")");
-	}
-	//avg and product have expr1 and expr2
-	else if(exp == "avg") {
-		exp.append("(");
-		exp.append(getExpression(expr1_depth));
-		exp.append(",");
-		exp.append(getExpression(expr2_depth));
-		exp.append(")");
-	}
-	else if(exp =="(" ){
-		exp.append(getExpression(expr1_depth));
-		exp.append("*");
-		exp.append(getExpression(expr2_depth));
-		exp.append(")");
-	}
 
 	return exp;
 }
