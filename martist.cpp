@@ -5,6 +5,10 @@
 #include <math.h>
 #include <iostream>
 #include <vector>
+#include "CImg.h"
+using namespace cimg_library;
+
+
 
 Martist::Martist(double* buffer, size_t height, size_t width, int rdepth, int gdepth,int bdepth)
 				:height(height),width(width),rdepth(rdepth),gdepth(gdepth),bdepth(bdepth){
@@ -87,29 +91,54 @@ void Martist::changeBuffer(double* buffer, size_t width, size_t height){
 		myBuffer = buffer;
 }
 void Martist::paint(){
+	std::string redParsed;
+	std::string greenParsed;
+	std::string blueParsed;
 
-	std::string redExpression = getExpression(rdepth);
-	std::string greenExpression = getExpression(gdepth);
-	std::string blueExpression = getExpression(bdepth);
 
-	std::string redParsed = "pi pi pi x * cos * sin x x * + 2 / * cos";
-	std::string greenParsed = "pi pi pi x * cos * sin x x * + 2 / * cos";
-	std::string blueParsed = "pi pi pi x * cos * sin x x * + 2 / * cos";
+/*
+	if(rdepth == 0) 
+		redParsed = "zero";
+	else
+		redParsed = Parser::parse(getExpression(rdepth));
+	
+	if(gdepth == 0) 
+		greenParsed = "zero";
+	else
+		greenParsed = Parser::parse(getExpression(gdepth));
 
+	if(bdepth == 0) 
+		blueParsed = "zero";
+	else
+		blueParsed = Parser::parse(getExpression(bdepth));
+
+
+*/
+
+
+	redParsed = "pi pi pi x * cos * sin x x * + 2 / * cos";
+	greenParsed = "pi pi pi x * cos * sin x x * + 2 / * cos";
+	blueParsed = "pi pi pi x * cos * sin x x * + 2 / * cos";
 	for(double y = 0; y < height; y++){
 		for(double x = 0; x < width; x++){
 			size_t index = (x + y*width)*3;
-			double redvalue = evaluateExpression(redParsed,x,y); 
-			myBuffer[index] = redvalue;		//R
-			myBuffer[index+1] = evaluateExpression(greenParsed,x,y);	//G
+			myBuffer[index] = evaluateExpression(redParsed,x,y);	//R
+			myBuffer[index+1] = evaluateExpression(greenParsed,x,y);//G
 			myBuffer[index+2] = evaluateExpression(blueParsed,x,y);	//B
 			std::cout << myBuffer[index] << " " << myBuffer[index+1] << " " << myBuffer[index+2];
 		}
 		std::cout << "" << std::endl;
 	}
+
+
+	CImg<double> img(myBuffer,height,width,1,3,false);
+	img.display();
 }
 
 double Martist::evaluateExpression(std::string exp,double xpos, double ypos){
+
+	if(exp == "zero")
+		return 0.0;
 
 	std::vector<double> numberStack;
 

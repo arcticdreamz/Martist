@@ -7,11 +7,14 @@
 
 int main(){
 	double* buffer = nullptr;
-	size_t height = 20;
-	size_t width = 20;
+	size_t height = 10;
+	size_t width = 10;
 	Martist martist(buffer,height,width,4,4,4);
-	martist.paint();
-	
+
+	std::string myString = martist.getExpression(100);
+	std::cout << myString;
+
+	martist.paint(); 
 
 
 	return 0;
