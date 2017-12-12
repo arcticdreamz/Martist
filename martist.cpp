@@ -95,22 +95,34 @@ void Martist::paint(){
 	std::string greenParsed;
 	std::string blueParsed;
 
+ 	std::string redParsed;
+	std::string greenParsed;
+	std::string blueParsed;
+
+  	std::istringstream redIN(getExpression(rdepth));
+  	std::istringstream greenIN(getExpression(gdepth));
+  	std::istringstream blueIN(getExpression(bdepth));
+
+	Parser redParser(redIN);
+	Parser greenParser(greenIN);
+	Parser blueParser(blueIN);
+
 
 /*
 	if(rdepth == 0) 
 		redParsed = "zero";
 	else
-		redParsed = Parser::parse(getExpression(rdepth));
+		redParsed = redParser.parse(redIN);
 	
 	if(gdepth == 0) 
 		greenParsed = "zero";
 	else
-		greenParsed = Parser::parse(getExpression(gdepth));
+		greenParsed = greenParser.parse(greenIN);
 
 	if(bdepth == 0) 
 		blueParsed = "zero";
 	else
-		blueParsed = Parser::parse(getExpression(bdepth));
+		blueParsed = blueParser.parse(blueIN);
 
 
 */
@@ -135,7 +147,7 @@ void Martist::paint(){
 	img.display();
 }
 
-double Martist::evaluateExpression(std::string exp,double xpos, double ypos){
+double Martist::evaluateExpression(std::vector<string> exp,double xpos, double ypos){
 
 	if(exp == "zero")
 		return 0.0;
