@@ -1,12 +1,15 @@
 #include "martist.hpp"
+#include "parser.hpp"
 #include <stdexcept> //domain_error
 #include <string>
 #include <cstdlib>     // std::rand
 #include <math.h>
-#include <iostream>
+#include <sstream>
 #include <vector>
 #include "CImg.h"
 using namespace cimg_library;
+
+
 
 
 
@@ -91,13 +94,9 @@ void Martist::changeBuffer(double* buffer, size_t width, size_t height){
 		myBuffer = buffer;
 }
 void Martist::paint(){
-	std::string redParsed;
-	std::string greenParsed;
-	std::string blueParsed;
-
- 	std::string redParsed;
-	std::string greenParsed;
-	std::string blueParsed;
+	Exp redParsed;
+	Exp greenParsed;
+	Exp blueParsed;
 
   	std::istringstream redIN(getExpression(rdepth));
   	std::istringstream greenIN(getExpression(gdepth));
@@ -108,38 +107,41 @@ void Martist::paint(){
 	Parser blueParser(blueIN);
 
 
-/*
+
 	if(rdepth == 0) 
-		redParsed = "zero";
+		redParsed.push_back("zero");
 	else
-		redParsed = redParser.parse(redIN);
+		redParser.parse(redParsed);
 	
 	if(gdepth == 0) 
-		greenParsed = "zero";
+		greenParsed.push_back("zero");
 	else
-		greenParsed = greenParser.parse(greenIN);
+		greenParser.parse(greenParsed);
 
 	if(bdepth == 0) 
-		blueParsed = "zero";
+		blueParsed.push_back("zero");
 	else
-		blueParsed = blueParser.parse(blueIN);
+		blueParser.parse(blueParsed);
 
 
-*/
 
 
-	redParsed = "pi pi pi x * cos * sin x x * + 2 / * cos";
+
+/*	redParsed = "pi pi pi x * cos * sin x x * + 2 / * cos";
 	greenParsed = "pi pi pi x * cos * sin x x * + 2 / * cos";
 	blueParsed = "pi pi pi x * cos * sin x x * + 2 / * cos";
+
+	*/
+
 	for(double y = 0; y < height; y++){
 		for(double x = 0; x < width; x++){
 			size_t index = (x + y*width)*3;
 			myBuffer[index] = evaluateExpression(redParsed,x,y);	//R
 			myBuffer[index+1] = evaluateExpression(greenParsed,x,y);//G
 			myBuffer[index+2] = evaluateExpression(blueParsed,x,y);	//B
-			std::cout << myBuffer[index] << " " << myBuffer[index+1] << " " << myBuffer[index+2];
+			//std::cout << myBuffer[index] << " " << myBuffer[index+1] << " " << myBuffer[index+2];
 		}
-		std::cout << "" << std::endl;
+		//std::cout << "" << std::endl;
 	}
 
 
@@ -147,55 +149,41 @@ void Martist::paint(){
 	img.display();
 }
 
-double Martist::evaluateExpression(std::vector<string> exp,double xpos, double ypos){
+double Martist::evaluateExpression(Exp& exp, double xpos, double ypos){
 
-	if(exp == "zero")
+	if(*exp.begin() == "zero")
 		return 0.0;
 
 	std::vector<double> numberStack;
 
 	auto c = exp.begin();
 	while(c != exp.end()) {
-		//Whitespace
-		if(isspace(*c)){
-			++c;
-			continue;
-		}
 
 		//Operands
-		if(*c == 'x' || *c == 'y' || *c == '2' || *c == 'p' || *c == 'e'){
-			if(*c == 'x')
+		if(*c == "x" || *c == "y" || *c == "2" || *c == "pi" || *c == "enter"){
+			if(*c == "x")
 				numberStack.push_back(xpos/width);
-			else if(*c == 'y')
+			else if(*c == "y")
 				numberStack.push_back(ypos/height);
-			else if(*c == '2')
+			else if(*c == "2")
 				numberStack.push_back(2);
-			else if(*c == 'p'){ //pi
-				c = c + 2;
+			else if(*c == "pi") //pi
 				numberStack.push_back(3.1415);
-				continue;
-			}
-			else if(*c == 'e'){ //enter
-				c = c + 5;
-				continue;
-			}
+			else if(*c == "enter"){}//enter
+			
 		//Operators
 		}else{
-			if(*c == 's'){ //sin
-				c = c + 3;
+			if(*c == "sin"){ //sin
 				double op = numberStack.back();
 				numberStack.pop_back();
 				numberStack.push_back(sin(op));
-				continue;
 			}
-			else if(*c == 'c'){//cos
-				c = c + 3;
+			else if(*c == "cos"){//cos
 				double op = numberStack.back();
 				numberStack.pop_back();
 				numberStack.push_back(cos(op));
-				continue;
 			}
-			else if(*c == '*'){
+			else if(*c == "*"){
 				double op = numberStack.back();
 				numberStack.pop_back();
 				double op2 = numberStack.back();
@@ -203,7 +191,7 @@ double Martist::evaluateExpression(std::vector<string> exp,double xpos, double y
 
 				numberStack.push_back(op * op2);
 			}
-			else if(*c == '/'){
+			else if(*c == "/"){
 				double op = numberStack.back();
 				numberStack.pop_back();
 				double op2 = numberStack.back();
@@ -211,7 +199,7 @@ double Martist::evaluateExpression(std::vector<string> exp,double xpos, double y
 
 				numberStack.push_back(op / op2);
 			}				
-			else if(*c == '+'){
+			else if(*c == "+"){
 				double op = numberStack.back();
 				numberStack.pop_back();
 				double op2 = numberStack.back();

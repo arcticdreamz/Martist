@@ -1,22 +1,32 @@
 #include "martist.hpp"
+#include "parser.hpp"
 #include <stdexcept> //domain_error
 #include <string>
 #include <cstdlib>     // std::rand
-#include <iostream>
+#include <sstream>
 
 
 int main(){
 	double* buffer = nullptr;
-	size_t height = 10;
-	size_t width = 10;
-	Martist martist(buffer,height,width,4,4,4);
+	size_t height = 400;
+	size_t width = 400;
+	int reddepth,greendepth,bluedepth;
+	std::cout <<"reddepth:";
+	std::cin >> reddepth;
 
-	std::string myString = martist.getExpression(100);
-	std::cout << myString;
+	std::cout <<"greendepth:";
+	std::cin >> greendepth;
+
+	std::cout <<"bluedepth:";
+	std::cin >> bluedepth;
+	std::cout << "" << std::endl;
+
+	Martist martist(buffer,height,width,reddepth,greendepth,bluedepth);
+
+	//std::string myString = martist.getExpression(100);
+	//std::cout << myString;
 
 	martist.paint(); 
-
-
 	return 0;
 }
 

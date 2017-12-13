@@ -2,7 +2,7 @@
 #ifndef _MARTIST_H
 #define _MARTIST_H
 #include <string>
-
+#include "parser.hpp"
 
 
 
@@ -33,7 +33,7 @@ private:
 
 
 	//std::string getExpression(int depth);
-	double evaluateExpression(std::string exp,double xpos, double ypos);
+	double evaluateExpression(Exp& exp,double xpos, double ypos);
 
 };
 
