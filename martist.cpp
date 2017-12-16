@@ -1,14 +1,14 @@
-#include "martist.hpp"
-#include "parser.hpp"
 #include <stdexcept> //domain_error
 #include <string>
-#include <cstdlib>     // std::rand
+#include <cstdlib>    // std::rand
 #include <math.h>
 #include <sstream>
 #include <vector>
+
 #include "CImg.h"
 using namespace cimg_library;
-
+#include "martist.hpp"
+#include "parser.hpp"
 
 
 
@@ -23,7 +23,7 @@ Martist::~Martist() { delete[] myBuffer; }
 
 std::string Martist::getExpression(int depth){
 
-	std::string expressions[4] = {"sin","cos","avg","("};
+	std::string expressions[4] = {"avg","cos","(","sin",};
 	std::string exp;
 
 
@@ -84,11 +84,13 @@ void Martist::blueDepth(int depth){
 int Martist::blueDepth(){
 	return bdepth;
 }
-void Martist::seed(int seed){}
+void Martist::seed(int seed){
+	srand(seed);
+}
 
 void Martist::changeBuffer(double* buffer, size_t width, size_t height){
 		size_t bufferSize = width*height*3;
-		buffer  = new double[bufferSize];  // Creates 5 elements
+		buffer  = new double[bufferSize];  
 		if(buffer == NULL)
 			throw std::domain_error("Buffer not initialised");
 		myBuffer = buffer;
@@ -97,10 +99,20 @@ void Martist::paint(){
 	Exp redParsed;
 	Exp greenParsed;
 	Exp blueParsed;
+	std::string redExpression,greenExpression,blueExpression;
 
-  	std::istringstream redIN(getExpression(rdepth));
-  	std::istringstream greenIN(getExpression(gdepth));
-  	std::istringstream blueIN(getExpression(bdepth));
+	redExpression = getExpression(rdepth);
+	greenExpression = getExpression(gdepth);
+	blueExpression = getExpression(bdepth);
+
+	std::cout << "redExpression: " << redExpression << std::endl;
+	std::cout << "greenExpression: " << greenExpression << std::endl;
+	std::cout << "blueExpression: " << blueExpression << std::endl;
+
+
+  	std::istringstream redIN(redExpression);
+  	std::istringstream greenIN(greenExpression);
+  	std::istringstream blueIN(blueExpression);
 
 	Parser redParser(redIN);
 	Parser greenParser(greenIN);
@@ -124,6 +136,24 @@ void Martist::paint(){
 		blueParser.parse(blueParsed);
 
 
+	std::cout << "redParsed: ";
+	for(auto it = redParsed.begin(); it < redParsed.end(); it++) {
+		std::cout << *it << " ";
+	}
+	std::cout << "" << std::endl;
+
+	std::cout << "greenParsed: ";
+	for(auto it = greenParsed.begin(); it < greenParsed.end(); it++) {
+		std::cout << *it << " " ;
+	}
+	std::cout << "" << std::endl;
+
+
+	std::cout << "blueParsed: ";
+	for(auto it = blueParsed.begin(); it < blueParsed.end(); it++) {
+		std::cout << *it << " ";
+	}
+	std::cout << "" << std::endl;
 
 
 
@@ -133,19 +163,41 @@ void Martist::paint(){
 
 	*/
 
-	for(double y = 0; y < height; y++){
-		for(double x = 0; x < width; x++){
+	for(size_t y = 0; y < height; y++){
+		for(size_t x = 0; x < width; x++){
 			size_t index = (x + y*width)*3;
-			myBuffer[index] = evaluateExpression(redParsed,x,y);	//R
-			myBuffer[index+1] = evaluateExpression(greenParsed,x,y);//G
-			myBuffer[index+2] = evaluateExpression(blueParsed,x,y);	//B
-			//std::cout << myBuffer[index] << " " << myBuffer[index+1] << " " << myBuffer[index+2];
+			if(*redParsed.begin() == "zero")
+				myBuffer[index] = 0.0;
+			else
+				myBuffer[index] = evaluateExpression(redParsed,x,y);	//R
+
+			if(*greenParsed.begin() == "zero")
+				myBuffer[index+1] = 0.0;
+			else
+				myBuffer[index+1] = evaluateExpression(greenParsed,x,y); //G
+
+			if(*blueParsed.begin() == "zero")
+				myBuffer[index+2] = 0.0;
+			else
+				myBuffer[index+2] = evaluateExpression(blueParsed,x,y);	//B
+
 		}
-		//std::cout << "" << std::endl;
+	}
+
+	for(size_t y = 0; y < height; y++){
+		for(size_t x = 0; x < width; x++){
+			size_t index = (x + y*width)*3;
+			std::cout << myBuffer[index] << " " << myBuffer[index+1] << " " << myBuffer[index+2]  << " | ";
+		}
+		std::cout << "" << std::endl;
 	}
 
 
-	CImg<double> img(myBuffer,height,width,1,3,false);
+	//CImg stores the pixels in a "planar" form(R1R2R3...G1G2G3)
+	//, not interleaved (R1G1B1 R2G2B2)
+	//We thus need to invert the coords and do permute
+	CImg<double> img(myBuffer,3,width,height);
+	img.permute_axes("yzcx");
 	img.display();
 }
 
@@ -213,7 +265,7 @@ double Martist::evaluateExpression(Exp& exp, double xpos, double ypos){
 
 	}
 	double result = numberStack.back();
-	return result;
+	return 255*(0.5 + 0.5 * result);
 
 }
 

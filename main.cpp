@@ -8,9 +8,10 @@
 
 int main(){
 	double* buffer = nullptr;
-	size_t height = 400;
-	size_t width = 400;
+	size_t height;
+	size_t width;
 	int reddepth,greendepth,bluedepth;
+	int seed;
 	std::cout <<"reddepth:";
 	std::cin >> reddepth;
 
@@ -21,11 +22,22 @@ int main(){
 	std::cin >> bluedepth;
 	std::cout << "" << std::endl;
 
+	std::cout <<"height:";
+	std::cin >> height;
+	std::cout << "" << std::endl;
+
+	std::cout <<"width:";
+	std::cin >> width;
+	std::cout << "" << std::endl;
+
+	std::cout <<"seed:";
+	std::cin >> seed;
+	std::cout << "" << std::endl;
+
 	Martist martist(buffer,height,width,reddepth,greendepth,bluedepth);
 
 	//std::string myString = martist.getExpression(100);
 	//std::cout << myString;
-
 	martist.paint(); 
 	return 0;
 }

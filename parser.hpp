@@ -22,7 +22,17 @@ class Lexer {
 	private:
 	std::istream& in;
 	std::streamoff counter;
+
+
+	/* Method returning a token corresponding to a given string
+	*	ARGUMENTS :
+	*	- one string, usually passed by extractString()
+	*/
 	token identifyToken(const std::string s);
+
+	/* Method returning a 1 to 3 letter string read from an input stream
+	*	-No arguments
+	*/
 	std::string extractString();
 };
 
@@ -38,21 +48,49 @@ class Parser {
 
 	private:
     Lexer lexer;
+    // Stocks locations of open parentheses
 	std::vector<std::streamoff> openParLocations;
+
+	//Vector that will contain the sequence of tokens to be converted to RPN
 	std::vector<Lexer::token> tokenVector;
 
  	const std::string tokenToText[10] = {"x", "y", "sin", "cos", "pi", "(", ")", "*", "AVG", ","};
+
+	/* Method checking the syntax of a mathematical expression and returning true
+	* if the syntax is correct and false if not
+	* 
+	* NO ARGUMENTS 
+	*/
  	bool checkSyntax();
+
+	/* 4 methods checking the syntax of a mathemaical expression, namely
+	*  an average, a product, a sine/cosine and a simple X or Y
+	*  Returns true if the syntax is correct, false if not
+	* 
+	* NO ARGUMENTS 
+	*/
  	bool checkAverage();
  	bool checkProduct();
  	bool checkSinCos();
  	bool checkXY();
- 	bool infixToRPN(Exp& exp,std::vector<Lexer::token>& tokenVector); 
 
+	/* Method converting an infix expression given in the form of a 
+	* vector of token to a postfix expression
+	* 
+	* ARGUMENTS :
+	* -Reference to a container that will contain the converted expression
+	* -Reference to the sequence of tokens to be converted
+	*/
+ 	bool infixToRPN(Exp& exp,std::vector<Lexer::token>& tokenVector);
+
+
+	/* Method checking the precedence of two operators
+	* 
+	* ARGUMENTS :
+	* -an operator in the form of a token
+	* -an operator in the form of a string
+	*/
+	bool checkPrecedence(const Lexer::token tok, const std::string s);
 };
-
-
-
-
 
 #endif

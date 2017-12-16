@@ -11,7 +11,6 @@ public:
 	explicit Martist(double* buffer, size_t height, size_t width, int rdepth, int gdepth,int bdepth);
 	~Martist();
 	
-	std::string getExpression(int depth);
 
 	void redDepth(int depth);
 	int redDepth();
@@ -28,11 +27,10 @@ private:
 	size_t height;
 	size_t width;
 	int rdepth,gdepth,bdepth;
-	//int seed;
 	std::string red,green,blue;
 
 
-	//std::string getExpression(int depth);
+	std::string getExpression(int depth);
 	double evaluateExpression(Exp& exp,double xpos, double ypos);
 
 };
