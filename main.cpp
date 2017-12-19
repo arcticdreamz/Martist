@@ -3,16 +3,17 @@
 #include <stdexcept> //domain_error
 #include <string>
 #include <cstdlib>     // std::rand
-#include <sstream>
+#include <iostream>
 
 
 int main(){
-	double* buffer = nullptr;
-	size_t height;
-	size_t width;
-	int reddepth,greendepth,bluedepth;
-	int seed;
-	std::cout <<"reddepth:";
+	size_t height = 100;
+	size_t width = 100;
+	int reddepth = 5;
+	int greendepth = 5;
+	int bluedepth = 6;
+	//int seed;
+/*	std::cout <<"reddepth:";
 	std::cin >> reddepth;
 
 	std::cout <<"greendepth:";
@@ -33,12 +34,23 @@ int main(){
 	std::cout <<"seed:";
 	std::cin >> seed;
 	std::cout << "" << std::endl;
+*/
+
+
+
+	unsigned char* buffer = (unsigned char*) malloc(3*width*height*sizeof(unsigned char));
 
 	Martist martist(buffer,height,width,reddepth,greendepth,bluedepth);
+	std::cin >> martist;
+
+	
 
 	//std::string myString = martist.getExpression(100);
 	//std::cout << myString;
-	martist.paint(); 
+	//martist.paint(); 
+
+
+	free(buffer);
 	return 0;
 }
 

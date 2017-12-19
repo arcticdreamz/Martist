@@ -13,7 +13,11 @@ class Lexer {
 	public:
 	enum token {X, Y, SIN, COS, PI, OPEN_PAR, CLOSE_PAR, TIMES, AVG, COMMA};
 	explicit Lexer(std::istream& in);
-	token next();
+	/* Method returning a token and updating a counter
+	*	ARGUMENTS :
+	* -reference to a string that will contain the whole infix expression
+	*/
+	token next(std::string& expression);
 	token peek();
 	std::streamoff count() const;
 	void reset();
@@ -44,7 +48,7 @@ typedef std::vector<std::string> Exp;
 class Parser {
     public:
 	explicit Parser(std::istream& in);
-	bool parse(Exp& exp);
+	bool parse(Exp& exp,std::string& expression);
 
 	private:
     Lexer lexer;
@@ -59,20 +63,22 @@ class Parser {
 	/* Method checking the syntax of a mathematical expression and returning true
 	* if the syntax is correct and false if not
 	* 
-	* NO ARGUMENTS 
+	* ARGUMENTS 
+	*-reference to a string that will contain the whole infix expression
 	*/
- 	bool checkSyntax();
+ 	bool checkSyntax(std::string& expression);
 
 	/* 4 methods checking the syntax of a mathemaical expression, namely
 	*  an average, a product, a sine/cosine and a simple X or Y
 	*  Returns true if the syntax is correct, false if not
 	* 
-	* NO ARGUMENTS 
+	* ARGUMENTS 
+	* -reference to a string that will contain the whole infix expression
 	*/
- 	bool checkAverage();
- 	bool checkProduct();
- 	bool checkSinCos();
- 	bool checkXY();
+ 	bool checkAverage(std::string& expression);
+ 	bool checkProduct(std::string& expression);
+ 	bool checkSinCos(std::string& expression);
+ 	bool checkXY(std::string& expression);
 
 	/* Method converting an infix expression given in the form of a 
 	* vector of token to a postfix expression

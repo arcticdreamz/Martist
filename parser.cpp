@@ -16,9 +16,10 @@ using std::cin;
 Lexer::Lexer(std::istream& inputStream) : in(inputStream),counter(0){}
 
 
-Lexer::token Lexer::next() {
+Lexer::token Lexer::next(std::string& expression) {
 	in.seekg(count()); //Go to the current position
 	const std::string s = extractString();
+	expression += s;
 	counter = in.tellg();
 	return identifyToken(s);
 }
@@ -141,9 +142,10 @@ bool Parser::checkPrecedence(const Lexer::token tok, const std::string s){
 
 
 
-bool Parser::parse(Exp& exp){
+bool Parser::parse(Exp& exp, std::string& expression){
+	expression.clear();
 	//Phase 1 -- Check Syntax
-	if(!checkSyntax())
+	if(!checkSyntax(expression))
 		return false;
 				
 	//Phase 2 -- INFIX TO RPN
@@ -151,26 +153,26 @@ bool Parser::parse(Exp& exp){
 }
 
 
-bool Parser::checkSyntax() {
+bool Parser::checkSyntax(std::string& expression) {
 
 
 	//Checks sin/cos
 	if(lexer.peek() == Lexer::SIN || lexer.peek() == Lexer::COS){
-		if(!checkSinCos())
+		if(!checkSinCos(expression))
 			return false;
 	}
 	//Check AVG
 	else if(lexer.peek() == Lexer::AVG){
-		if(!checkAverage())
+		if(!checkAverage(expression))
 			return false;	
 	}
 	//Check product
 	else if(lexer.peek() == Lexer::OPEN_PAR){
-		if(!checkProduct())
+		if(!checkProduct(expression))
 			return false;		
 	//Check X/Y
 	}else if(lexer.peek()  == Lexer::X || lexer.peek() == Lexer::Y){
-		if(!checkXY())
+		if(!checkXY(expression))
 			return false;	
 	}else{
 		return false;
@@ -180,8 +182,8 @@ bool Parser::checkSyntax() {
 } //end of checkSyntax
 
 
-bool Parser::checkXY(){
-	tokenVector.push_back(lexer.next()); //Take the token
+bool Parser::checkXY(std::string& expression){
+	tokenVector.push_back(lexer.next(expression)); //Take the token
 
 	//After X or Y , there can only be "*)," or EOF
 	try{	
@@ -204,16 +206,16 @@ bool Parser::checkXY(){
 	return true;
 }
 
-bool Parser::checkSinCos(){
+bool Parser::checkSinCos(std::string& expression){
 
-	tokenVector.push_back(lexer.next());
+	tokenVector.push_back(lexer.next(expression));
 
 	try{
 		//Check if OPEN_PAR follows SIN/COS
 		if(lexer.peek() != Lexer::OPEN_PAR)
 	  		throw std::domain_error("PARSE ERROR at " + std::to_string(lexer.count()));
 
-	  	tokenVector.push_back(lexer.next()); //Take token
+	  	tokenVector.push_back(lexer.next(expression)); //Take token
 
 	  	//Remember the position of the OPEN_PAR
 	  	openParLocations.push_back(lexer.count());
@@ -222,16 +224,16 @@ bool Parser::checkSinCos(){
 	  	if(lexer.peek() != Lexer::PI)
 	  		throw std::domain_error("PARSE ERROR at " + std::to_string(lexer.count()));
 
-	  	tokenVector.push_back(lexer.next()); //Take token
+	  	tokenVector.push_back(lexer.next(expression)); //Take token
 
 		//Check if TIMES follows PI
 	  	if(lexer.peek() != Lexer::TIMES)
 	  		throw std::domain_error("PARSE ERROR at " + std::to_string(lexer.count()));
 
-	  	tokenVector.push_back(lexer.next()); //Take token
+	  	tokenVector.push_back(lexer.next(expression)); //Take token
 
 	  	//Checking expr1
-		if(!checkSyntax())
+		if(!checkSyntax(expression))
 			return false;
 			
 		
@@ -239,7 +241,7 @@ bool Parser::checkSinCos(){
 		if(lexer.peek() != Lexer::CLOSE_PAR)
 	  		throw std::domain_error("PARSE ERROR at " + std::to_string(lexer.count()));
 	  	
-	  	tokenVector.push_back(lexer.next()); //Take token
+	  	tokenVector.push_back(lexer.next(expression)); //Take token
 
 	  	//If the container is empty (not enough CLOSE_PAR)
 	  	if(openParLocations.empty())
@@ -271,22 +273,22 @@ bool Parser::checkSinCos(){
 
 	return true;
 }
-bool Parser::checkAverage(){
+bool Parser::checkAverage(std::string& expression){
 	
-	tokenVector.push_back(lexer.next()); //Take token AVG
+	tokenVector.push_back(lexer.next(expression)); //Take token AVG
 
 	try{
 		//Check if OPEN_PAR follows avg
 	  	if(lexer.peek() != Lexer::OPEN_PAR)
 			throw std::domain_error("PARSE ERROR at " + std::to_string(lexer.count()));
 		
-	  	tokenVector.push_back(lexer.next()); //Take token OPEN_PAR
+	  	tokenVector.push_back(lexer.next(expression)); //Take token OPEN_PAR
 	  	
 	  	//Remember the position of the OPEN_PAR
 	  	openParLocations.push_back(lexer.count());
 
 		//checking expr1
-		if(!checkSyntax())
+		if(!checkSyntax(expression))
 			return false;
 		
 
@@ -294,17 +296,17 @@ bool Parser::checkAverage(){
 	  	if(lexer.peek() != Lexer::COMMA)
 			throw std::domain_error("PARSE ERROR at " + std::to_string(lexer.count()));
 
-		tokenVector.push_back(lexer.next()); //Take the token
+		tokenVector.push_back(lexer.next(expression)); //Take the token
 
 		//Check expr2
-		if(!checkSyntax())
+		if(!checkSyntax(expression))
 				return false;
 
 		// checks if AVG ends with CLOSE_PAR
 		if(lexer.peek() != Lexer::CLOSE_PAR)
 	  		throw std::domain_error("PARSE ERROR at " + std::to_string(lexer.count()));
 
-	  	tokenVector.push_back(lexer.next()); //Take the CLOSE_PAR
+	  	tokenVector.push_back(lexer.next(expression)); //Take the CLOSE_PAR
 
 
 	  	//If the container is empty (not enough OPEN_PAR) OR
@@ -342,33 +344,33 @@ bool Parser::checkAverage(){
 	return true;
 }
 
-bool Parser::checkProduct(){
+bool Parser::checkProduct(std::string& expression){
 
-	tokenVector.push_back(lexer.next()); //Take the OPEN_PAR
+	tokenVector.push_back(lexer.next(expression)); //Take the OPEN_PAR
 
   	//Remember the position of the OPEN_PAR
   	openParLocations.push_back(lexer.count());
 
   	try{
 		//checking exp1
-		if(!checkSyntax())
+		if(!checkSyntax(expression))
 			return false;
 		
 	  	//Check TIMES
 	  	if(lexer.peek() != Lexer::TIMES)
 	  		throw std::domain_error("PARSE ERROR at " + std::to_string(lexer.count()));
 		
-		tokenVector.push_back(lexer.next()); //Take the TIMES
+		tokenVector.push_back(lexer.next(expression)); //Take the TIMES
 
 		// checks exp2
-		if(!checkSyntax())
+		if(!checkSyntax(expression))
 			return false;
 		
 		//Check CLOSE_PAR
 		if(lexer.peek() != Lexer::CLOSE_PAR)
 	  		throw std::domain_error("PARSE ERROR at " + std::to_string(lexer.count()));
 
-	  	tokenVector.push_back(lexer.next());//Take the CLOSE_PAR
+	  	tokenVector.push_back(lexer.next(expression));//Take the CLOSE_PAR
 
 	  	//If the container is empty (not enough CLOSE_PAR) OR
 	  	if(openParLocations.empty())
