@@ -1,10 +1,9 @@
-#include "martist.hpp"
-#include "parser.hpp"
 #include <stdexcept> //domain_error
 #include <string>
 #include <cstdlib>     // std::rand
 #include <iostream>
 
+#include "martist.hpp"
 
 int main(){
 	size_t height = 100;
@@ -13,7 +12,7 @@ int main(){
 	int greendepth = 5;
 	int bluedepth = 6;
 	//int seed;
-/*	std::cout <<"reddepth:";
+	std::cout <<"reddepth:";
 	std::cin >> reddepth;
 
 	std::cout <<"greendepth:";
@@ -31,16 +30,17 @@ int main(){
 	std::cin >> width;
 	std::cout << "" << std::endl;
 
-	std::cout <<"seed:";
+/*  std::cout <<"seed:";
 	std::cin >> seed;
 	std::cout << "" << std::endl;
+
 */
-
-
+	std::cin.clear();
 
 	unsigned char* buffer = (unsigned char*) malloc(3*width*height*sizeof(unsigned char));
 
 	Martist martist(buffer,height,width,reddepth,greendepth,bluedepth);
+
 	std::cin >> martist;
 
 	

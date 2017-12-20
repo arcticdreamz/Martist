@@ -1,9 +1,9 @@
-
 #ifndef _MARTIST_H
 #define _MARTIST_H
 #include <string>
-#include "parser.hpp"
 #include <iostream>
+
+#include "expression.hpp"
 
 
 
@@ -25,21 +25,15 @@ public:
 	void paint();
 	
 private:
+
 	unsigned char* myBuffer;
 	size_t height;
 	size_t width;
 	int rdepth,gdepth,bdepth;
 
-	std::string redExpression, greenExpression, blueExpression;
-
-	Exp redParsed, greenParsed, blueParsed;
-
-	std::string getExpression(int depth);
-	unsigned char evaluateExpression(Exp& exp,double xpos, double ypos);
-	void randomInitialisation();
-
-
-
+	Expression red;
+	Expression green;
+	Expression blue;
 };
 
 #endif
