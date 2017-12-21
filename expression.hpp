@@ -14,7 +14,7 @@ public:
 	explicit Expression(int depth);
 
 	unsigned char evaluateExpression(double xpos, double ypos);
-	int calculateDepth() const{};
+	int calculateDepth() const;
 	Exp getParsed() const;
 	std::string getExpression() const;
 

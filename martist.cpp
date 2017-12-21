@@ -17,8 +17,11 @@ Martist::Martist(unsigned char* buffer, size_t height, size_t width, int rdepth,
 				: height(height), width(width), rdepth(rdepth), gdepth(gdepth), bdepth(bdepth),
 				red(rdepth), green(gdepth), blue(bdepth) {
 
+	if((isdigit(rdepth) && isdigit(gdepth) && isdigit(bdepth)))
+		throw std::domain_error("Depth must be a digit");
 	if(rdepth < 0 || gdepth < 0 || bdepth < 0)
 		throw std::domain_error("Depth can't be negative");
+
 
 	changeBuffer(buffer,width,height);
 
@@ -42,11 +45,16 @@ std::istream& operator>>(std::istream& in, Martist& m){
 	try{
 		for(int i = 0; i < 3; i++){
 			std::cout << color[i];
-
+			std::string input;
+			in >> input;
+			std::istringstream inp(input);
 			switch(i){
-				case 0 :m.red = Expression(in);
-				case 1 :m.green = Expression(in);
-				case 2 :m.blue = Expression(in);
+				case 0 :m.red = Expression(inp);
+						break;
+				case 1 :m.green = Expression(inp);
+						break;
+				case 2 :m.blue = Expression(inp);
+						break;
   			}
 		}
 	}catch(const std::domain_error& e){
@@ -62,18 +70,21 @@ std::istream& operator>>(std::istream& in, Martist& m){
 
 
 void Martist::redDepth(int depth){
+	red = Expression(depth);
 	rdepth = depth;
 }
 int Martist::redDepth() const{
 	return rdepth;
 }
 void Martist::greenDepth(int depth){
+	green = Expression(depth);
 	gdepth = depth;
 }
 int Martist::greenDepth() const{
 	return gdepth;
 }
 void Martist::blueDepth(int depth){
+	blue = Expression(depth);
 	bdepth = depth;
 }
 int Martist::blueDepth() const{
@@ -107,20 +118,23 @@ void Martist::paint(){
 		for(double y = 0; y < height; y++){
 			for(double x = 0; x < width; x++){
 				size_t index = (x + y*width)*3;
+				double x_pos = (2*x)/(width-1) - 1;
+				double y_pos = (2*x)/(height-1) - 1;
+
 				if(*red.getParsed().begin() == "zero")
 					myBuffer[index] = 0.0;
 				else
-					myBuffer[index] = red.evaluateExpression(x/width,y/height);	//R
+					myBuffer[index] = red.evaluateExpression(x_pos,y_pos);	//R
 
 				if(*green.getParsed().begin() == "zero")
 					myBuffer[index+1] = 0.0;
 				else
-					myBuffer[index+1] = green.evaluateExpression(x/width,y/height); //G
+					myBuffer[index+1] = green.evaluateExpression(x_pos,y_pos); //G
 
 				if(*blue.getParsed().begin() == "zero")
 					myBuffer[index+2] = 0.0;
 				else
-					myBuffer[index+2] = blue.evaluateExpression(x/width,y/height);	//B
+					myBuffer[index+2] = blue.evaluateExpression(x_pos,y_pos);	//B
 
 			}
 		}

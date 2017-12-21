@@ -149,9 +149,9 @@ unsigned char Expression::evaluateExpression(double xpos, double ypos){
 		++s;
 
 	}
-	int result = numberStack.back();
+	double result = numberStack.back();
 	return (unsigned char)255*(0.5 + 0.5 * result);
 
 }
 
-int calculateDepth() const{}
+int Expression::calculateDepth() const{}

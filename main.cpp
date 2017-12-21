@@ -12,7 +12,7 @@ int main(){
 	int greendepth = 5;
 	int bluedepth = 6;
 	//int seed;
-	std::cout <<"reddepth:";
+/*	std::cout <<"reddepth:";
 	std::cin >> reddepth;
 
 	std::cout <<"greendepth:";
@@ -30,25 +30,29 @@ int main(){
 	std::cin >> width;
 	std::cout << "" << std::endl;
 
-/*  std::cout <<"seed:";
+  std::cout <<"seed:";
 	std::cin >> seed;
 	std::cout << "" << std::endl;
 
 */
-	std::cin.clear();
 
 	unsigned char* buffer = (unsigned char*) malloc(3*width*height*sizeof(unsigned char));
 
 	Martist martist(buffer,height,width,reddepth,greendepth,bluedepth);
 
+	std::cin.clear();
 	std::cin >> martist;
 
 	
 
 	//std::string myString = martist.getExpression(100);
 	//std::cout << myString;
-	//martist.paint(); 
-
+try{
+	martist.paint(); 
+}catch(std::domain_error& e){
+	std::cout << "Caught erro: " << e.what() << std::endl;
+}
+	std::cout << martist;
 
 	free(buffer);
 	return 0;
