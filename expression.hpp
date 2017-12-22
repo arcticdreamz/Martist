@@ -10,10 +10,12 @@
 class Expression {	
 
 public:
+	Expression();
 	explicit Expression(std::istream& in);
 	explicit Expression(int depth);
 
-	unsigned char evaluateExpression(double xpos, double ypos);
+
+	double evaluateExpression(double xpos, double ypos);
 	int calculateDepth() const;
 	Exp getParsed() const;
 	std::string getExpression() const;

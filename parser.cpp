@@ -85,7 +85,7 @@ std::string Lexer::extractString(){
 	//check for EOF
 	if(c == std::char_traits<char>::eof())
 		throw std::domain_error("EOI");
-	
+
 	//Ignore whitespace
 	while(isspace(c)) {
  		c = in.get();
@@ -415,7 +415,7 @@ bool Parser::infixToRPN(Exp& exp,std::vector<Lexer::token>& tokenVector){
  	int parentheses = 0;
  	int avgPar = -1;
 
- 	auto tok = tokenVector.begin();
+ 	std::vector<Lexer::token>::iterator tok = tokenVector.begin();
  	while(tok != tokenVector.end()){
 
 		if(*tok == Lexer::PI || *tok == Lexer::X || *tok == Lexer::Y){

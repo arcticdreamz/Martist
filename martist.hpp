@@ -31,6 +31,7 @@ private:
 	size_t width;
 	int rdepth,gdepth,bdepth;
 
+	void updateBuffer();
 	Expression red;
 	Expression green;
 	Expression blue;

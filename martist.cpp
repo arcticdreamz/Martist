@@ -14,15 +14,11 @@ using namespace cimg_library;
 
 
 Martist::Martist(unsigned char* buffer, size_t height, size_t width, int rdepth, int gdepth,int bdepth)
-				: height(height), width(width), rdepth(rdepth), gdepth(gdepth), bdepth(bdepth),
-				red(rdepth), green(gdepth), blue(bdepth) {
+				: myBuffer(buffer), height(height), width(width), rdepth(rdepth), gdepth(gdepth), bdepth(bdepth) {
 
-	if(!isdigit(height) || !isdigit(width))
-		throw std::domain_error("Height and width must be a digit");
 	if(height <= 0 || width <= 0)
 		throw std::domain_error("Height and width must be positive");
-	if(!isdigit(rdepth) || !isdigit(gdepth) ||!isdigit(bdepth))
-		throw std::domain_error("Depth must be a digit");
+
 	if(rdepth < 0 || gdepth < 0 || bdepth < 0)
 		throw std::domain_error("Depth can't be negative");
 
@@ -49,20 +45,39 @@ std::istream& operator>>(std::istream& in, Martist& m){
 	if(in){
 		for(int i = 0; i < 3; i++){
 			std::cout << color[i];
-			std::string input;
-			in >> input;
-			std::istringstream inp(input);
+			char sequence[1024];
+			in.getline(sequence,1024);
+			std::string input(sequence);
+
+			std::istringstream stringstream(input);
 			switch(i){
-				case 0 :m.red = Expression(inp);
+				case 0 :if(std::all_of(input.begin(),input.end(),isspace) || input == "\n")
+							m.red = Expression(0);
+						else{
+							m.red = Expression(stringstream);
+							m.rdepth = m.red.calculateDepth();
+						}
 						break;
-				case 1 :m.green = Expression(inp);
+				case 1 :if(std::all_of(input.begin(),input.end(),isspace) || input == "\n")
+							m.green = Expression(0);
+						else{
+							m.green = Expression(stringstream);
+							m.gdepth = m.green.calculateDepth();
+						}
 						break;
-				case 2 :m.blue = Expression(inp);
+				case 2 : if(std::all_of(input.begin(),input.end(),isspace) || input == "\n")
+							m.blue = Expression(0);
+						else{
+							m.blue = Expression(stringstream);
+							m.bdepth = m.blue.calculateDepth();
+						}
 						break;
   			}
 		}
-	}
 
+		m.updateBuffer();	
+
+	}
 	return in;
 }
 
@@ -72,8 +87,7 @@ std::istream& operator>>(std::istream& in, Martist& m){
 
 
 void Martist::redDepth(int depth){
-	if(!isdigit(depth))
-		throw std::domain_error("Depth must be a digit");
+
 	if(depth < 0 )
 		throw std::domain_error("Depth can't be negative");
 	red = Expression(depth);
@@ -83,8 +97,7 @@ int Martist::redDepth() const{
 	return red.calculateDepth();
 }
 void Martist::greenDepth(int depth){
-	if(!isdigit(depth))
-		throw std::domain_error("Depth must be a digit");
+
 	if(depth < 0 )
 		throw std::domain_error("Depth can't be negative");	
 	green = Expression(depth);
@@ -94,8 +107,7 @@ int Martist::greenDepth() const{
 	return green.calculateDepth();
 }
 void Martist::blueDepth(int depth){
-	if(!isdigit(depth))
-		throw std::domain_error("Depth must be a digit");
+
 	if(depth < 0 )
 		throw std::domain_error("Depth can't be negative");	
 	blue = Expression(depth);
@@ -118,42 +130,13 @@ void Martist::changeBuffer(unsigned char* buffer, size_t width, size_t height){
 		myBuffer = buffer;
 }
 void Martist::paint(){
-	if(myBuffer == nullptr)
-		throw std::domain_error("Buffer not initialised");
 
-	for(double y = 0; y < height; y++){
-		for(double x = 0; x < width; x++){
-			size_t index = (x + y*width)*3;
-			double x_pos = (2*x)/(width-1) - 1;
-			double y_pos = (2*x)/(height-1) - 1;
 
-			if(*red.getParsed().begin() == "zero")
-				myBuffer[index] = 0.0;
-			else
-				myBuffer[index] = red.evaluateExpression(x_pos,y_pos);	//R
+	red = Expression(rdepth);
+	green = Expression(gdepth);
+	blue = Expression(bdepth);
 
-			if(*green.getParsed().begin() == "zero")
-				myBuffer[index+1] = 0.0;
-			else
-				myBuffer[index+1] = green.evaluateExpression(x_pos,y_pos); //G
-
-			if(*blue.getParsed().begin() == "zero")
-				myBuffer[index+2] = 0.0;
-			else
-				myBuffer[index+2] = blue.evaluateExpression(x_pos,y_pos);	//B
-
-		}
-	}
-
-/*
-	for(size_t y = 0; y < height; y++){
-		for(size_t x = 0; x < width; x++){
-			size_t index = (x + y*width)*3;
-			std::cout << myBuffer[index] << " " << myBuffer[index+1] << " " << myBuffer[index+2]  << " | ";
-		}
-		std::cout << "" << std::endl;
-	}
-
+	updateBuffer();
 
 	//CImg stores the pixels in a "planar" form(R1R2R3...G1G2G3)
 	//, not interleaved (R1G1B1 R2G2B2)
@@ -162,10 +145,25 @@ void Martist::paint(){
 	img.permute_axes("yzcx");
 	img.display();
 
-*/
 }
 
+void Martist::updateBuffer(){
+	if(myBuffer == nullptr)
+		throw std::domain_error("Buffer not initialised");
 
+	for(double k = 0; k < height; k++){
+		for(double m = 0; m < width; m++){
+			size_t indem = (m + k*width)*3;
+			double x_pos = (2*m)/(width-1) - 1;
+			double y_pos = (2*k)/(height-1) - 1;
+
+				myBuffer[index] = (unsigned char) 255/2*(1 + red.evaluateExpression(x_pos,y_pos));	//R
+				myBuffer[index+1] = (unsigned char) 255/2*(1 + green.evaluateExpression(x_pos,y_pos)); //G
+				myBuffer[index+2] = (unsigned char) 255/2*(1 + blue.evaluateExpression(x_pos,y_pos));	//B
+
+		}
+	}
+}
 
 
 

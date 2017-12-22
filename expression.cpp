@@ -10,9 +10,10 @@
 #include "martist.hpp"
 
 
+Expression::Expression(){}
+
 Expression::Expression(int depth){
-	if(!isdigit('depth'))
-		throw std::domain_error("Depth must be a digit");
+
 	if(depth < 0 )
 		throw std::domain_error("Depth can't be negative");
 
@@ -90,13 +91,13 @@ std::string Expression::randomExpression(int depth){
 }
 
 
-unsigned char Expression::evaluateExpression(double xpos, double ypos){
+double Expression::evaluateExpression(double xpos, double ypos){
 	if(*parsedExp.begin() == "zero")
-		return 0.0;
+		return -1;
 
 	std::vector<double> numberStack;
 
-	auto s = parsedExp.begin();
+	Exp::iterator s = parsedExp.begin();
 	while(s != parsedExp.end()) {
 
 		//Operands
@@ -156,7 +157,7 @@ unsigned char Expression::evaluateExpression(double xpos, double ypos){
 
 	}
 	double result = numberStack.back();
-	return (unsigned char) 255/2*(1 + result);
+	return result;
 
 }
 
@@ -164,11 +165,19 @@ unsigned char Expression::evaluateExpression(double xpos, double ypos){
 
 
 int Expression::calculateDepth() const{
-	int depth = 1;
-	auto c = exp.begin();
+	int par = 1;
+	int depth = 0;
+	std::string::const_iterator c = exp.begin();
 	while(c != exp.end()){
 		if(*c == '(')
-			depth++;
+			par++;
+
+		depth = std::max(par,depth);
+
+		if(*c == ')')
+			par--;
+
+		c++;
 
 	}
 	return depth;
