@@ -40,20 +40,23 @@ int main(){
 
 	Martist martist(buffer,height,width,reddepth,greendepth,bluedepth);
 
-	std::cin.clear();
-	std::cin >> martist;
+	martist.redDepth(1);
+	martist.greenDepth(1);
+	martist.blueDepth(1);
 
-	
+
+	//	std::cin.clear();
+	//	std::cin >> martist;
 
 	//std::string myString = martist.getExpression(100);
 	//std::cout << myString;
-try{
-	martist.paint(); 
-}catch(std::domain_error& e){
-	std::cout << "Caught erro: " << e.what() << std::endl;
-}
+	try{
+		martist.paint(); 
+	}catch(std::domain_error& e){
+		std::cout << "Caught error (paint): " << e.what() << std::endl;
+	}
 	std::cout << martist;
-
+	
 	free(buffer);
 	return 0;
 }

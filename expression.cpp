@@ -11,6 +11,10 @@
 
 
 Expression::Expression(int depth){
+	if(!isdigit('depth'))
+		throw std::domain_error("Depth must be a digit");
+	if(depth < 0 )
+		throw std::domain_error("Depth can't be negative");
 
 	if(depth == 0){
 		parsedExp.push_back("zero");
@@ -87,7 +91,6 @@ std::string Expression::randomExpression(int depth){
 
 
 unsigned char Expression::evaluateExpression(double xpos, double ypos){
-
 	if(*parsedExp.begin() == "zero")
 		return 0.0;
 
@@ -110,6 +113,9 @@ unsigned char Expression::evaluateExpression(double xpos, double ypos){
 			
 		//Operators
 		}else{
+			if(numberStack.empty())
+				throw std::domain_error("Error during evaluateExpression");
+
 			if(*s == "sin"){ //sin
 				double op = numberStack.back();
 				numberStack.pop_back();
@@ -150,8 +156,20 @@ unsigned char Expression::evaluateExpression(double xpos, double ypos){
 
 	}
 	double result = numberStack.back();
-	return (unsigned char)255*(0.5 + 0.5 * result);
+	return (unsigned char) 255/2*(1 + result);
 
 }
 
-int Expression::calculateDepth() const{}
+
+
+
+int Expression::calculateDepth() const{
+	int depth = 1;
+	auto c = exp.begin();
+	while(c != exp.end()){
+		if(*c == '(')
+			depth++;
+
+	}
+	return depth;
+}
