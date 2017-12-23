@@ -484,7 +484,14 @@ bool Parser::infixToRPN(Exp& exp,std::vector<Lexer::token>& tokenVector){
 
 	// while there are still operator tokens on the stack, pop them onto the expression
 	while(!operatorStack.empty()){
-		exp.push_back(operatorStack.back());
+		if(operatorStack.back() == tokenToText[Lexer::AVG]){
+			exp.push_back("+");
+			exp.push_back("2");
+			exp.push_back("/");
+		}else{
+			exp.push_back(operatorStack.back());
+		}
+
 		operatorStack.pop_back();
 	}
 
