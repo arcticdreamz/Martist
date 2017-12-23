@@ -1,24 +1,21 @@
 CC = g++
 CFLAGS = -W -Wall -ansi -pedantic --std=c++11
 
-.PHONY : clean all
+.PHONY : clean martist
 
-all: martist
+martist : libmartist.a martist.o
 
-martist: martist.o parser.o expression.o
-	ar rc libmartist.a martist.o parser.o expression.o
+martist.o : martist.cpp
+	$(CC) -c $< -o $@ $(CFLAGS)
 
-martist.o : martist.cpp 
-	$(CC) -o $@ -c $< $(CFLAGS)
+libmartist.a : parser.o expression.o
+	ar rcU $@ $^; rm -rf $^
 
 parser.o : parser.cpp
-	$(CC) -o $@ -c $< $(CFLAGS)
+	$(CC) -c $< -o $@ $(CFLAGS)
 
 expression.o: expression.cpp
-	$(CC) -o $@ -c $< $(CFLAGS)
+	$(CC) -c $< -o $@ $(CFLAGS)
 
-clean:
+clean : 
 	rm -rf *.o
-
-mrproper: clean
-	rm -rf martist
