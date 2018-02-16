@@ -11,9 +11,20 @@ using namespace cimg_library;
 int main(){
 	size_t height =200;
 	size_t width = 200;
-	int reddepth = std::rand() % 8;
-	int greendepth = std::rand() % 8;
-	int bluedepth = std::rand() % 8;
+	int reddepth;
+	int greendepth;
+	int bluedepth;
+
+	std::cout << "RED:" << std::endl;
+	std::cin >> reddepth;
+	
+	std::cout << "GREEN:" << std::endl;
+	std::cin >> greendepth;
+
+	std::cout << "BLUE:" << std::endl;
+
+	std::cin >> bluedepth;
+
 
 	unsigned char* buffer = (unsigned char*) malloc(3*width*height*sizeof(unsigned char));
 
@@ -22,6 +33,10 @@ int main(){
 
 
 
+
+
+
+	martist.paint();
 
 	// OUTPUT EXPRESSIONS
 	std::cout << martist;
@@ -35,8 +50,6 @@ int main(){
 
 	std::cout <<"bluedepth:";
 	std::cout << martist.blueDepth() <<std::endl;
-
-	martist.paint();
 
 	CImg<unsigned char> boardA(buffer,3,width,height);
     boardA.permute_axes("yzcx");

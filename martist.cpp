@@ -136,6 +136,7 @@ void Martist::changeBuffer(unsigned char* buffer, size_t width, size_t height){
 		myBuffer = buffer;
 }
 void Martist::paint(){
+	
 	red = Expression(rdepth);
 	green = Expression(gdepth);
 	blue = Expression(bdepth);
@@ -157,9 +158,9 @@ void Martist::updateBuffer(){
 			double x_pos = (2*m)/(m_width-1) - 1;
 			double y_pos = (2*k)/(m_height-1) - 1;
 
-				myBuffer[index] = (unsigned char) 255/2*(1 + red.evaluateExpression(x_pos,y_pos));	//R
-				myBuffer[index+1] = (unsigned char) 255/2*(1 + green.evaluateExpression(x_pos,y_pos)); //G
-				myBuffer[index+2] = (unsigned char) 255/2*(1 + blue.evaluateExpression(x_pos,y_pos));	//B
+			myBuffer[index] = (unsigned char) 255/2*(1 + red.evaluateExpression(x_pos,y_pos));	//R
+			myBuffer[index+1] = (unsigned char) 255/2*(1 + green.evaluateExpression(x_pos,y_pos)); //G
+			myBuffer[index+2] = (unsigned char) 255/2*(1 + blue.evaluateExpression(x_pos,y_pos));	//B
 
 		}
 	}
